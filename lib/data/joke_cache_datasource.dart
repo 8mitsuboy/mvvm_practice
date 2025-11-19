@@ -1,4 +1,4 @@
-class JokeChacheDatasource {
+class JokeCacheDatasource {
   // 簡易キャッシュ
   Map<String, dynamic>? _cache;
 

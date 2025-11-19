@@ -1,5 +1,5 @@
 import 'package:mvvm_practice/data/joke_api_datasource.dart';
-import 'package:mvvm_practice/data/joke_chache_datasource.dart';
+import 'package:mvvm_practice/data/joke_cache_datasource.dart';
 import 'package:mvvm_practice/data/joke_local_datasource.dart';
 import 'package:mvvm_practice/domain/joke.dart';
 import 'package:mvvm_practice/domain/joke_reposeitory.dart';
@@ -7,7 +7,7 @@ import 'package:mvvm_practice/domain/joke_reposeitory.dart';
 class JokeRepositoryImpl implements JokeReposeitory {
   final JokeApiDatasource api;
   final JokeLocalDatasource local;
-  final JokeChacheDatasource cache;
+  final JokeCacheDatasource cache;
 
   JokeRepositoryImpl({
     required this.api,
