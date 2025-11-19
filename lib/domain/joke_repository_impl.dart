@@ -1,17 +1,43 @@
 import 'package:mvvm_practice/data/joke_api_datasource.dart';
+import 'package:mvvm_practice/data/joke_chache_datasource.dart';
+import 'package:mvvm_practice/data/joke_local_datasource.dart';
 import 'package:mvvm_practice/domain/joke.dart';
 import 'package:mvvm_practice/domain/joke_reposeitory.dart';
 
 class JokeRepositoryImpl implements JokeReposeitory {
-  final JokeApiDatasource dataSource;
+  final JokeApiDatasource api;
+  final JokeLocalDatasource local;
+  final JokeChacheDatasource cache;
 
-  JokeRepositoryImpl({required this.dataSource});
+  JokeRepositoryImpl({
+    required this.api,
+    required this.local,
+    required this.cache,
+  });
 
   @override
   Future<Joke> fetchRandomJoke() async {
-    // DataSource が渡す raw JSON を Domain Model に変換する
-    final data = await dataSource.fetchRandomJoke();
+    // 1. キャッシュから取得
+    try {
+      final json = await cache.fetchCachedJoke();
+      return Joke.fromJson(json);
+    } catch (_) {}
 
-    return Joke.fromJson(data);
+    // 2. ローカルDBから取得
+    try {
+      final json = await local.fetchLocalJoke();
+      // キャッシュにも保存（おまけ）
+      await cache.saveCache(json);
+      return Joke.fromJson(json);
+    } catch (_) {}
+
+    // 3. 最後にAPIから取得
+    final json = await api.fetchRandomJoke();
+
+    // API取得成功したら、キャッシュ・ローカル両方に保存
+    await cache.saveCache(json);
+    await local.saveLocal(json);
+
+    return Joke.fromJson(json);
   }
 }
