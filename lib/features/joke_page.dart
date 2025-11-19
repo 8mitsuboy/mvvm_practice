@@ -1,6 +1,9 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:mvvm_practice/di.dart';
+import 'package:mvvm_practice/domain/joke.dart';
+import 'package:mvvm_practice/domain/joke_reposeitory.dart';
+import 'package:mvvm_practice/domain/joke_repository_impl.dart';
 import '../data/joke_api_datasource.dart';
 
 class JokePage extends StatefulWidget {
@@ -11,8 +14,9 @@ class JokePage extends StatefulWidget {
 }
 
 class _JokePageState extends State<JokePage> {
-  final JokeApiDatasource _jokeApiDatasource = JokeApiDatasource(http.Client());
-  String? _joke;
+  final JokeReposeitory _jokeReposeitory = DI.buildRepository();
+
+  Joke? _joke;
   bool _loading = false;
   String? _error;
 
@@ -29,7 +33,7 @@ class _JokePageState extends State<JokePage> {
     });
 
     try {
-      final joke = await _jokeApiDatasource.fetchRandomJoke();
+      final joke = await _jokeReposeitory.fetchRandomJoke();
       setState(() => _joke = joke);
     } catch (e) {
       setState(() => _error = e.toString());
@@ -51,7 +55,10 @@ class _JokePageState extends State<JokePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(_joke!, textAlign: TextAlign.center),
+            Text(
+              '${_joke!.setup}\n\n${_joke!.punchline}',
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(height: 24),
             ElevatedButton(onPressed: _fetch, child: const Text('Another')),
           ],
