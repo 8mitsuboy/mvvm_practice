@@ -1,5 +1,5 @@
 import 'joke.dart';
 
-abstract class JokeReposeitory {
+abstract class JokeRepository {
   Future<Joke> fetchRandomJoke();
 }
